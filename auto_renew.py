@@ -100,29 +100,24 @@ def update_last_renew_time(success, new_time=None, error_message=None):
         f.write(content)
 
 def get_expiration_time(driver):
-    expiry_selectors = [
-        ("xpath", "//div[contains(@class, 'RenewBox___StyledP-sc-1inh2rq-4')]"),
-        ("xpath", "//div[contains(text(), 'Expired')]"),
-        ("xpath", "//div[contains(text(), 'EXPIRED:')]"),
-        ("xpath", "//div[contains(@class, 'expiry')]"),
-        ("xpath", "//div[contains(@class, 'server-details')]//div[contains(text(), 'Expires')]"),
-        ("xpath", "//span[contains(text(), 'Expires')]"),
-        ("xpath", "//div[contains(text(), 'Free server')]")
-    ]
-    
-    for selector_type, selector in expiry_selectors:
-        try:
-            element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((selector_type, selector))
-            )
-            expiry_text = element.text
+    try:
+        elements = driver.find_elements(By.CSS_SELECTOR, ".RenewBox___StyledP-sc-1inh2rq-4")
+        
+        if elements:
+            expiry_text = elements[0].text
             print(f"Found expiration time: {expiry_text}")
+            
+            if expiry_text.startswith("EXPIRED: "):
+                expiry_text = expiry_text.replace("EXPIRED: ", "").strip()
+            
             return expiry_text
-        except Exception as e:
-            print(f"Failed to find with selector {selector}: {e}")
+        else:
+            print("No expiration time elements found")
+            return None
     
-    print("Could not find expiration time with any selector")
-    return None
+    except Exception as e:
+        print(f"Error finding expiration time: {e}")
+        return None
 
 def main():
     driver = None
@@ -197,20 +192,26 @@ def main():
         print("Clicking server element...")
         driver.execute_script("arguments[0].click();", server_element)
         
-        # Increase wait time to ensure page is fully loaded
+        # Wait for server page to load completely
         print("Waiting for server page to load completely...")
-        time.sleep(15)  # Increase to 15 seconds
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, "body"))
+        )
+
+        # Print current URL immediately after page load
+        print(f"Server page URL after load: {driver.current_url}")
+        
+        # Print page title for additional verification
+        print(f"Server page title: {driver.title}")
 
         print("Taking screenshot of server page...")
         driver.save_screenshot('debug_server_page.png')
 
+        # Additional logging to ensure URL is captured
+        print(f"Confirmed server page URL: {driver.current_url}")
+
         # Commented out button printing
         all_buttons = driver.find_elements(By.TAG_NAME, "button")
-        # for idx, button in enumerate(all_buttons):
-        #     print(f"Button {idx + 1}:")
-        #     print(f"Text: {button.text}")
-        #     print(f"Class: {button.get_attribute('class')}")
-        #     print(f"HTML: {button.get_attribute('outerHTML')}\n")
 
         print("\nLooking for renew button...")
         renew_selectors = [
