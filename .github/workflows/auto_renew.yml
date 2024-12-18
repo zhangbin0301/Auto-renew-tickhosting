@@ -9,7 +9,7 @@ permissions:
   contents: write 
 
 jobs:
-  Auto_renew_tickhosting_server:
+  Auto_renew_tickhosting:
     runs-on: windows-latest 
     
     steps:
