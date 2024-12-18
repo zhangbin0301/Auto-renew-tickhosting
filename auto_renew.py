@@ -8,7 +8,8 @@ import time
 from dateutil import parser
 import os
 
-SESSION_COOKIE = os.getenv('PTERODACTYL_SESSION', '')   # 此处单引号里添加名为pterodactyl_session的cookie或在settings-actons里设置secrets环境变量
+# 此处单引号里添加名为pterodactyl_session的cookie或在settings-actons里设置secrets环境变量,建议在secrets中设置环境变量
+SESSION_COOKIE = os.getenv('PTERODACTYL_SESSION', '')   
 
 def setup_driver():
     options = webdriver.ChromeOptions()
@@ -100,6 +101,7 @@ def update_last_renew_time(success, new_time=None, error_message=None):
 
 def get_expiration_time(driver):
     expiry_selectors = [
+        ("xpath", "//div[contains(@class, 'RenewBox___StyledP-sc-1inh2rq-4')]"),
         ("xpath", "//div[contains(text(), 'Expired')]"),
         ("xpath", "//div[contains(text(), 'EXPIRED:')]"),
         ("xpath", "//div[contains(@class, 'expiry')]"),
