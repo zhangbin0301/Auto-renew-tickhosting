@@ -1,0 +1,49 @@
+name: Auto Renew Tickhosting
+
+on:
+  schedule:
+    - cron: '0 0 */4 * *'  # 每4天运行一次（96小时）,在UTC时间00:00运行
+  workflow_dispatch: 
+
+permissions:
+  contents: write 
+
+jobs:
+  Auto_renew_tickhosting_server:
+    runs-on: windows-latest 
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        
+    - name: Pull latest changes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git pull --rebase origin main
+      
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+        
+    - name: Install Chrome
+      uses: browser-actions/setup-chrome@latest
+      
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run auto renew script
+      env:
+        PTERODACTYL_SESSION: ${{ secrets.PTERODACTYL_SESSION }}
+      run: python auto_renew.py
+
+    - name: Commit and push if changed
+      run: |
+        git add last_renew_data.txt
+        git commit -m "Update renewal status" || exit 0
+        git push origin HEAD:main
