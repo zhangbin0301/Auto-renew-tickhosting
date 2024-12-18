@@ -1,4 +1,4 @@
-# Tickhosting Auto Renew
+# Auto Renew Tickhosting
 
 自动续期 TickHosting 免费服务器的脚本，使用 GitHub Actions 每96小时自动运行一次。
 
@@ -29,6 +29,8 @@
    - 点击 New repository secret
    - Name: `PTERODACTYL_SESSION`
    - Value: 您获取到的 pterodactyl_session cookie 值
+   - ![PixPin_2024-12-18_12-40-50](https://github.com/user-attachments/assets/3ce6fa9e-611e-4810-a0ca-f35ddbe91400)
+
 
 ### 3. 验证运行
 
