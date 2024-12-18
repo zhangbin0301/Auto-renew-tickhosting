@@ -9,7 +9,7 @@ from dateutil import parser
 import os
 
 # 此处单引号里添加名为pterodactyl_session的cookie或在settings-actons里设置secrets环境变量,建议在secrets中设置环境变量
-SESSION_COOKIE = os.getenv('PTERODACTYL_SESSION', '')   
+SESSION_COOKIE = os.getenv('PTERODACTYL_SESSION', '')  
 
 def setup_driver():
     options = webdriver.ChromeOptions()
