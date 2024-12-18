@@ -2,6 +2,7 @@
 
 自动续期 TickHosting 免费游戏机的脚本，使用 GitHub Actions 每96小时自动运行一次。
 - 部署文件：https://github.com/eooce/all-games/blob/main/msh_server.bin
+- 将files里的原msh_server.bin文件改名为LICENSE.bin，再上传此文件，修改变量，保存文件类型为shell，权限改为444，运行即可
 
 ## 功能特点
 
