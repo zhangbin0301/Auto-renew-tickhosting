@@ -1,7 +1,7 @@
 # Auto Renew Tickhosting
 
 自动续期 TickHosting 免费游戏机的脚本，使用 GitHub Actions 每96小时自动运行一次。
-部署文件：https://github.com/eooce/all-games/blob/main/msh_server.bin
+- 部署文件：https://github.com/eooce/all-games/blob/main/msh_server.bin
 
 ## 功能特点
 
