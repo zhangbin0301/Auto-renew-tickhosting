@@ -1,6 +1,6 @@
 # Auto Renew Tickhosting
 
-自动续期 TickHosting 免费服务器的脚本，使用 GitHub Actions 每96小时自动运行一次。
+自动续期 TickHosting 免费游戏机的脚本，使用 GitHub Actions 每96小时自动运行一次。
 
 ## 功能特点
 
