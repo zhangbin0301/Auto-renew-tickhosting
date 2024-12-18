@@ -262,12 +262,17 @@ def main():
         initial_time = get_expiration_time(driver)
         
         # Click renew button
-        renew_button.click()
+        print("Clicking renew button...")
+        driver.execute_script("arguments[0].click();", renew_button)
+        
+        print("Waiting 70 seconds for renewal process...")
+        time.sleep(70)
 
-        # Wait for page to update
-        time.sleep(10)  # Increased wait time
+        print("Taking screenshot after renewal...")
+        driver.save_screenshot('debug_after_renewal.png')
+
         driver.refresh()
-        time.sleep(5)  # Additional wait after refresh
+        time.sleep(8)  # Additional wait after refresh
 
         # Get new expiration time
         new_time = get_expiration_time(driver)
