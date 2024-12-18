@@ -32,6 +32,8 @@
    - Name: `PTERODACTYL_SESSION`
    - Value: 您获取到的 pterodactyl_session cookie 值
    - ![PixPin_2024-12-18_12-40-50](https://github.com/user-attachments/assets/3ce6fa9e-611e-4810-a0ca-f35ddbe91400)
+   - ![image](https://github.com/user-attachments/assets/97aa8e73-ba70-42ee-8882-ce3d3161894f)
+
 
 
 ### 3. 验证运行
