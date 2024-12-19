@@ -1,3 +1,4 @@
-Last renewal time: 2024-12-18 17:24:41
-Status: Failed
-Error message: Time not extended
+Server ID: Unknown
+Renew status: Failed
+Last renewal time: 2024-12-19 02:48:22
+Error: An error occurred: Could not find renew button
