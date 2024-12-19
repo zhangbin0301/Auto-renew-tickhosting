@@ -247,46 +247,47 @@ def main():
         # Additional logging to ensure URL is captured
         print(f"Confirmed server page URL: {driver.current_url}")
 
-        # Print the full page source code
-        # print("\nFull Page Source (first 10000 characters):")
-        # print(driver.page_source[:10000])
+        # 打印完整的页面源代码
+        print("\nFull Page Source (first 10000 characters):")
+        print(driver.page_source[:10000])
         
+        # 打印所有按钮的详细信息
         all_buttons = driver.find_elements(By.TAG_NAME, "button")
-        # print(f"\nTotal buttons found: {len(all_buttons)}")
+        print(f"\nTotal buttons found: {len(all_buttons)}")
         for idx, button in enumerate(all_buttons, 1):
             try:
-                # print(f"Button {idx}:")
-                # print(f"  Text: '{button.text}'")
-                # print(f"  Visible: {button.is_displayed()}")
-                # print(f"  Enabled: {button.is_enabled()}")
-                # print(f"  Class: '{button.get_attribute('class')}'")
-                # print(f"  Outer HTML: '{button.get_attribute('outerHTML')}'")
-                # print("---")
-                pass
+                print(f"Button {idx}:")
+                print(f"  Text: '{button.text}'")
+                print(f"  Visible: {button.is_displayed()}")
+                print(f"  Enabled: {button.is_enabled()}")
+                print(f"  Class: '{button.get_attribute('class')}'")
+                print(f"  Outer HTML: '{button.get_attribute('outerHTML')}'")
+                print("---")
             except Exception as e:
                 print(f"Error processing button {idx}: {e}")
         
+        # 打印所有 span 元素
         all_spans = driver.find_elements(By.TAG_NAME, "span")
-        # print(f"\nTotal spans found: {len(all_spans)}")
+        print(f"\nTotal spans found: {len(all_spans)}")
         for idx, span in enumerate(all_spans, 1):
             try:
-                # print(f"Span {idx}:")
-                # print(f"  Text: '{span.text}'")
-                # print(f"  Class: '{span.get_attribute('class')}'")
-                # print(f"  Outer HTML: '{span.get_attribute('outerHTML')}'")
-                # print("---")
-                pass
+                print(f"Span {idx}:")
+                print(f"  Text: '{span.text}'")
+                print(f"  Class: '{span.get_attribute('class')}'")
+                print(f"  Outer HTML: '{span.get_attribute('outerHTML')}'")
+                print("---")
             except Exception as e:
                 print(f"Error processing span {idx}: {e}")
         
+        # 获取服务器ID
         try:
             current_url = driver.current_url
-            # print(f"\nCurrent URL: {current_url}")
+            print(f"\nCurrent URL: {current_url}")
             
             server_id_match = re.search(r'/server/([a-f0-9]+)', current_url)
             server_id = server_id_match.group(1) if server_id_match else 'Unknown'
             
-            # print(f"Extracted Server ID: {server_id}")
+            print(f"Extracted Server ID: {server_id}")
         except Exception as e:
             print(f"Error extracting server ID: {e}")
             server_id = 'Unknown'
