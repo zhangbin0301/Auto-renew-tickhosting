@@ -10,6 +10,7 @@
 - 自动点击续期按钮
 - 验证续期是否成功
 - 每96小时自动运行
+- telegram消息推送
 - 支持手动触发运行
 
 ## 使用方法
@@ -34,7 +35,7 @@
    - ![PixPin_2024-12-18_12-40-50](https://github.com/user-attachments/assets/3ce6fa9e-611e-4810-a0ca-f35ddbe91400)
    - ![image](https://github.com/user-attachments/assets/97aa8e73-ba70-42ee-8882-ce3d3161894f)
 
-
+3. telegram消息推送功能可选，如需要请在secrets中添加TELEGRAM_BOT_TOKEN和TELEGRAM_CHAT_ID
 
 ### 3. 验证运行
 
