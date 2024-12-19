@@ -40,10 +40,17 @@ jobs:
     - name: Run auto renew script
       env:
         PTERODACTYL_SESSION: ${{ secrets.PTERODACTYL_SESSION }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: python auto_renew.py
 
     - name: Commit and push if changed
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'actions@github.com'
         git add last_renew_data.txt
         git commit -m "Update renewal status" || exit 0
-        git push origin HEAD:main
+        git pull --rebase origin main
+        git push
