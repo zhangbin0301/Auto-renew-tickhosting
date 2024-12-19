@@ -364,19 +364,22 @@ def main():
                     print("Renewal may have failed. Time was not extended.")
                     update_last_renew_time(
                         success=False, 
-                        error_message="Time not extended"
+                        error_message="Time not extended",
+                        server_id=server_id
                     )
             except Exception as e:
                 print(f"Error parsing dates: {str(e)}")
                 update_last_renew_time(
                     success=False, 
-                    error_message=f"Date parsing error: {str(e)}"
+                    error_message=f"Date parsing error: {str(e)}",
+                    server_id=server_id
                 )
         else:
             print("Could not verify renewal - unable to get expiration times")
             update_last_renew_time(
                 success=False, 
-                error_message="Could not find expiration times"
+                error_message="Could not find expiration times",
+                server_id=server_id
             )
 
     except TimeoutException as e:
