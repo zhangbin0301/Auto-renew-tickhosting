@@ -1,4 +1,4 @@
-Server ID: Unknown
-Renew status: Failed
-Last renewal time: 2024-12-21 01:27:10
-Error: An error occurred: Failed to reach dashboard
+Server ID: 565aa0fd
+Renew status: Success
+Last renewal time: 2024-12-21 01:32:38
+New expiration time: 2025-01-03 03:08:04
