@@ -52,6 +52,6 @@ jobs:
       run: |
         git checkout main
         git add last_renew_data.txt
-        git diff --cached --exit-code || git commit -m "Update renewal status"
+        git diff --cached --exit-code || git commit -m "Auto Update by Github Actions"
         git pull --rebase origin main || true
         git push origin main
