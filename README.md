@@ -17,7 +17,7 @@
 
 ### 1. 使用邮箱密码注册 并获取 Cookie
 
-1. 登录 [TickHosting](https://tickhosting.com/auth/login)，使用邮箱密码注册账号
+1. 打开 [TickHosting](https://tickhosting.com/auth/login)，使用邮箱密码注册账号
 2. 打开浏览器开发者工具（F12）
 3. 切换到 Appcation 选项
 4. 刷新页面
