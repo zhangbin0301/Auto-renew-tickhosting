@@ -39,6 +39,8 @@ jobs:
         
     - name: Run auto renew script
       env:
+        EMAIL: ${{ secrets.EMAIL }}
+        PASSWORD: ${{ secrets.PASSWORD }}
         PTERODACTYL_SESSION: ${{ secrets.PTERODACTYL_SESSION }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -48,9 +50,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        git config --global user.name 'GitHub Actions'
-        git config --global user.email 'actions@github.com'
+        git checkout main
         git add last_renew_data.txt
-        git commit -m "Update renewal status" || exit 0
-        git pull --rebase origin main
-        git push
+        git diff --cached --exit-code || git commit -m "Update renewal status"
+        git pull --rebase origin main || true
+        git push origin main
