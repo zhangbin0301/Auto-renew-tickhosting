@@ -15,7 +15,7 @@
 
 ## 使用方法
 
-### 1. 获取 Cookie
+### 1. 使用邮箱密码注册 并获取 Cookie
 
 1. 登录 [TickHosting](https://tickhosting.com/auth/login)
 2. 打开浏览器开发者工具（F12）
@@ -30,7 +30,8 @@
    - 进入仓库的 Settings
    - 点击 Secrets and variables -> Actions
    - 点击 New repository secret
-   - Name: `PTERODACTYL_SESSION`
+   - 添加```EMAIL```和```PASSWORD```环境便量
+   - 添加`PTERODACTYL_SESSION`环境便量
    - Value: 您获取到的 pterodactyl_session cookie 值
    - ![PixPin_2024-12-18_12-40-50](https://github.com/user-attachments/assets/3ce6fa9e-611e-4810-a0ca-f35ddbe91400)
    - ![image](https://github.com/user-attachments/assets/97aa8e73-ba70-42ee-8882-ce3d3161894f)
@@ -45,7 +46,6 @@
 
 ## 注意事项
 
-- 请确保 cookie 值保密，不要泄露给他人
-- 如果登录失败，请更新 cookie 值
+- 请确保 cookie及邮箱密码正确
 - 建议定期检查 Actions 运行日志，确保脚本正常运行
 - 如果需要修改运行频率，可以调整 `.github/workflows/auto_renew.yml` 中的 cron 表达式
