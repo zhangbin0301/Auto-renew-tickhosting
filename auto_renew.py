@@ -10,8 +10,10 @@ import os
 import requests
 import re
 
-# 此处单引号里添加名为pterodactyl_session的cookie或在settings-actons里设置secrets环境变量,建议在secrets中设置环境变量
-SESSION_COOKIE = os.getenv('PTERODACTYL_SESSION', '')  
+# 从环境变量读取登录凭据，默认使用PTERODACTYL_SESSION，账号密码作为备用方案，请在settings-actons里设置环境变量 
+EMAIL = os.getenv('EMAIL', '')        # 登录邮箱
+PASSWORD = os.getenv('PASSWORD', '')  # 登录密码
+SESSION_COOKIE = os.getenv('PTERODACTYL_SESSION', '')
 
 # Telegram Bot 通知配置（可选）
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '')
@@ -55,6 +57,146 @@ def add_cookies(driver):
     
     print("Current cookies after adding:", driver.get_cookies())
 
+def login_to_dashboard(driver):
+    # try cookie login frist
+    try:
+        print("Attempting to login with cookies...")
+        driver.get("https://tickhosting.com/")
+        time.sleep(5)
+        
+        print("Adding cookies...")
+        add_cookies(driver)
+        
+        print("Refreshing page after adding cookies...")
+        driver.refresh()
+        time.sleep(5)
+        
+        dashboard_urls = [
+            'https://tickhosting.com'
+        ]
+        
+        for url in dashboard_urls:
+            try:
+                print(f"Attempting to navigate to: {url}")
+                driver.get(url)
+                time.sleep(5)
+                
+                print(f"Current URL after navigation: {driver.current_url}")
+                print(f"Current page title: {driver.title}")
+                
+                if driver.current_url.startswith('https://tickhosting.com') and 'Dashboard' in driver.title:
+                    print("Cookie login successful!")
+                    return True
+            except Exception as e:
+                print(f"Failed to navigate to {url}: {e}")
+        
+        print("Cookie login failed to reach dashboard.")
+    except Exception as e:
+        print(f"Cookie login error: {str(e)}")
+    
+    # if cookie login fails, try email and password
+    try:
+        if not EMAIL or not PASSWORD:
+            raise ValueError("Email or password not set in environment variables")
+        
+        print("Attempting to login with email and password...")
+        driver.get('https://tickhosting.com/auth/login')
+        
+        # wait for the login page to load
+        time.sleep(8)
+        
+        # try different email and password input selectors
+        email_selectors = [
+            (By.NAME, 'username'),  
+            (By.ID, 'email'),
+            (By.NAME, 'email'),
+            (By.XPATH, "//input[@type='email']"),
+        ]
+        
+        password_selectors = [
+            (By.NAME, 'password'),  
+            (By.ID, 'password'),
+            (By.XPATH, "//input[@type='password']"),
+        ]
+        
+        login_button_selectors = [
+            (By.XPATH, "//button[@type='submit']"),
+            (By.XPATH, "//button[contains(text(), 'Login')]"),
+        ]
+        
+        # find the email and password input fields
+        email_input = None
+        for selector in email_selectors:
+            try:
+                email_input = driver.find_element(*selector)
+                print(f"Found email input with selector: {selector}")
+                break
+            except Exception as e:
+                print(f"Failed to find email input with selector {selector}: {e}")
+        
+        if not email_input:
+            raise Exception("Could not find email input field")
+        
+        password_input = None
+        for selector in password_selectors:
+            try:
+                password_input = driver.find_element(*selector)
+                print(f"Found password input with selector: {selector}")
+                break
+            except Exception as e:
+                print(f"Failed to find password input with selector {selector}: {e}")
+        
+        if not password_input:
+            raise Exception("Could not find password input field")
+        
+        login_button = None
+        for selector in login_button_selectors:
+            try:
+                login_button = driver.find_element(*selector)
+                print(f"Found login button with selector: {selector}")
+                break
+            except Exception as e:
+                print(f"Failed to find login button with selector {selector}: {e}")
+        
+        if not login_button:
+            raise Exception("Could not find login button")
+        
+        email_input.clear()
+        email_input.send_keys(EMAIL)
+        password_input.clear()
+        password_input.send_keys(PASSWORD)
+        
+        login_button.click()
+        
+        time.sleep(10)
+        
+        dashboard_urls = [
+            'https://tickhosting.com'
+        ]
+        
+        for url in dashboard_urls:
+            try:
+                print(f"Attempting to navigate to: {url}")
+                driver.get(url)
+                time.sleep(5)
+                
+                print(f"Current URL after email login: {driver.current_url}")
+                print(f"Current page title: {driver.title}")
+                
+                if driver.current_url.startswith('https://tickhosting.com') and 'Dashboard' in driver.title:
+                    print("Email/password login successful!")
+                    return True
+            except Exception as e:
+                print(f"Failed to navigate to {url}: {e}")
+        
+        raise Exception("Login did not reach dashboard")
+    
+    except Exception as e:
+        print(f"Login failed: {str(e)}")
+        # 发送 Telegram 通知
+        send_telegram_message(f"Auto Renew Login Error: {str(e)}")
+        return False
+
 def try_login(driver):
     try:
         print("\nAttempting to navigate to dashboard...")
@@ -74,6 +216,41 @@ def try_login(driver):
         
     except Exception as e:
         print(f"Error during login attempt: {str(e)}")
+        return False
+
+def login_with_credentials(driver):
+    try:
+        # get the login page
+        driver.get('https://tickhosting.com/auth/login')
+        
+        # wait for the login page to load
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.NAME, 'email'))
+        )
+        
+        # Locate the mailbox and password input box
+        email_input = driver.find_element(By.NAME, 'email')
+        password_input = driver.find_element(By.NAME, 'password')
+        
+        email_input.clear()
+        email_input.send_keys(EMAIL)
+        password_input.clear()
+        password_input.send_keys(PASSWORD)
+        
+        # Locate and click the login button
+        login_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Login') or contains(text(), '登录')]")
+        login_button.click()
+        
+        # wait for login to complete
+        WebDriverWait(driver, 10).until(
+            EC.url_contains('dashboard')
+        )
+        
+        print("Login successful!")
+        return True
+    
+    except Exception as e:
+        print(f"Login failed: {str(e)}")
         return False
 
 def wait_and_find_element(driver, by, value, timeout=20, description=""):
@@ -167,10 +344,11 @@ def main():
         driver.get("https://tickhosting.com")
         time.sleep(5)
         
-        print("Adding cookies...")
-        add_cookies(driver)
-
-        print("Refreshing page after adding cookies...")
+        # try login to dashboard
+        if not login_to_dashboard(driver):
+            raise Exception("Unable to login to dashboard")
+        
+        print("Refreshing page after login...")
         driver.refresh()
         time.sleep(5)  # Give more time for the page to load
 
@@ -247,11 +425,11 @@ def main():
         # Additional logging to ensure URL is captured
         print(f"Confirmed server page URL: {driver.current_url}")
 
-        # 打印完整的页面源代码
+        # Print full page source
         print("\nFull Page Source (first 10000 characters):")
         print(driver.page_source[:10000])
         
-        # 打印所有按钮的详细信息
+        # print button elements
         all_buttons = driver.find_elements(By.TAG_NAME, "button")
         print(f"\nTotal buttons found: {len(all_buttons)}")
         for idx, button in enumerate(all_buttons, 1):
@@ -266,7 +444,7 @@ def main():
             except Exception as e:
                 print(f"Error processing button {idx}: {e}")
         
-        # 打印所有 span 元素
+        # print span elements
         all_spans = driver.find_elements(By.TAG_NAME, "span")
         print(f"\nTotal spans found: {len(all_spans)}")
         for idx, span in enumerate(all_spans, 1):
@@ -279,7 +457,7 @@ def main():
             except Exception as e:
                 print(f"Error processing span {idx}: {e}")
         
-        # 获取服务器ID
+        # get server ID
         try:
             current_url = driver.current_url
             print(f"\nCurrent URL: {current_url}")
