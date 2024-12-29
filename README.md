@@ -1,8 +1,15 @@
 # Auto Renew Tickhosting
 
 自动续期 TickHosting 免费游戏机的脚本，使用 GitHub Actions 每96小时自动运行一次。
-- 部署文件：https://github.com/eooce/all-games/blob/main/msh_server.bin
-- 将files里的原msh_server.bin文件改名为LICENSE.bin，再上传此文件，修改变量，保存文件类型为shell，权限改为444，运行即可
+## 部署
+- 部署文件：https://github.com/eooce/all-games/blob/main/java.tar.gz
+- 将files里的原server.jar文件改名为LICENSE.jar，将eula.txt改名为eula.txt1，再上传此压缩包解压得到server.jar和start.sh文件
+- server.jar的权限为444，start.sh的权限为777，此时还无法启动，会报错不支持的jar文件
+- 点开左侧的schedules菜单---右上角的Create schedule，随便给个名字创建，中间的Only When Server Is Online选项关闭，然后点击创建好的任务进入
+- 点击右上角的New Task，Action选项选择Send power action，打开Continue on Failure开关，点击Create Task创建
+- 点击Run now运行，返回左侧菜单栏中的terminal,显示提示已经开始下载文件点击进入files，将eula.txt1改回eula.txt
+- 返回左侧菜单栏中的terminal，查看运行完后是否运行游戏，运行中的弹出需点击Accept
+- 完成
 
 ## 功能特点
 
