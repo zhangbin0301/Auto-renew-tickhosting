@@ -1,4 +1,4 @@
 Server ID: 809e07d0
-Renew status: Success
-Last renewal time: 2025-01-05 01:03:32
-New expiration time: 2025-01-18 03:45:16
+Renew status: Failed
+Last renewal time: 2025-01-09 00:58:51
+Error: Time not extended
