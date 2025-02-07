@@ -2,7 +2,7 @@ name: Auto Renew Tickhosting
 
 on:
   schedule:
-    - cron: '0 0 */4 * *'  # 每4天运行一次（96小时）,在UTC时间00:00运行
+    - cron: '0 0 */100 * *'  # 每几天运行一次，4是4天（96小时）100是100天,在UTC时间00:00运行
   workflow_dispatch: 
 
 permissions:
