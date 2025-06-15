@@ -14,7 +14,7 @@ jobs:
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
         
@@ -25,7 +25,7 @@ jobs:
         git pull --rebase origin main
       
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
         
@@ -59,7 +59,7 @@ jobs:
       run: python auto_renew.py
 
     - name: Upload debug artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: debug-files
