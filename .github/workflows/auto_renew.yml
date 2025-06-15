@@ -14,7 +14,7 @@ jobs:
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
         
@@ -25,28 +25,16 @@ jobs:
         git pull --rebase origin main
       
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v2
       with:
         python-version: '3.x'
         
-    - name: Install Chrome and Playwright dependencies
-      run: |
-        # 安装 Chrome
-        $chromePath = "$env:LOCALAPPDATA\Google\Chrome\Application\chrome.exe"
-        if (-not (Test-Path $chromePath)) {
-            Invoke-WebRequest "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/114.0.5735.90/win64/chrome-win64.zip" -OutFile "chrome.zip"
-            Expand-Archive -Path "chrome.zip" -DestinationPath "$env:LOCALAPPDATA\Google\Chrome"
-            Remove-Item "chrome.zip"
-        }
-        
-        # 安装 Playwright 和相关依赖
-        python -m pip install --upgrade pip
-        pip install playwright requests python-dateutil
-        python -m playwright install
-        python -m playwright install-deps
-        
+    - name: Install Chrome
+      uses: browser-actions/setup-chrome@latest
+      
     - name: Install Python dependencies
       run: |
+        python -m pip install --upgrade pip
         pip install -r requirements.txt
         
     - name: Run auto renew script
@@ -57,16 +45,6 @@ jobs:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: python auto_renew.py
-
-    - name: Upload debug artifacts
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: debug-files
-        path: |
-          debug_*.png
-          debug_*.html
-          last_renew_data.txt
 
     - name: Commit and push if changed
       env:
