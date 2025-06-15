@@ -9,6 +9,7 @@ import re
 # 配置
 EMAIL = os.getenv('EMAIL')
 PASSWORD = os.getenv('PASSWORD')
+SESSION_COOKIE = os.getenv('PTERODACTYL_SESSION')
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
@@ -55,7 +56,7 @@ def update_last_renew_time(success, new_time=None, error_message=None, server_id
 def handle_cloudflare(page):
     print("Detected Cloudflare challenge...")
     
-    # 等待验证自动完成
+    # 尝试等待验证自动完成
     try:
         page.wait_for_selector("text=Verify you are human", state="detached", timeout=120000)
         print("Cloudflare verification passed automatically")
@@ -64,21 +65,33 @@ def handle_cloudflare(page):
         print("Manual verification may be required")
         return False
 
-def login_to_dashboard(page):
+def login_with_cookie(page):
     try:
-        page.goto("https://tickhosting.com/auth/login", wait_until="networkidle", timeout=120000)
+        print("Attempting cookie login...")
+        page.context.add_cookies([{
+            'name': 'PTERODACTYL_SESSION',
+            'value': SESSION_COOKIE,
+            'domain': 'tickhosting.com',
+            'path': '/',
+            'secure': True
+        }])
+        page.goto("https://tickhosting.com", wait_until="networkidle")
+        return True
+    except Exception as e:
+        print(f"Cookie login failed: {e}")
+        return False
+
+def login_with_credentials(page):
+    try:
+        page.goto("https://tickhosting.com/auth/login", wait_until="networkidle")
         
-        # 检查Cloudflare验证
-        if "challenge" in page.url:
-            if not handle_cloudflare(page):
-                raise Exception("Cloudflare verification failed")
+        if "challenge" in page.url and not handle_cloudflare(page):
+            raise Exception("Cloudflare verification failed")
         
-        # 填写登录表单
         page.fill('input[name="email"]', EMAIL)
         page.fill('input[name="password"]', PASSWORD)
         page.click('button[type="submit"]:has-text("Login")')
         
-        # 等待登录完成
         try:
             page.wait_for_selector("text=Dashboard", timeout=30000)
             print("Login successful")
@@ -87,15 +100,24 @@ def login_to_dashboard(page):
             if "login" in page.url:
                 raise Exception("Login failed - possible wrong credentials")
             return True
-            
     except Exception as e:
         print(f"Login error: {e}")
         update_last_renew_time(False, error_message=f"Login failed: {str(e)}")
         return False
 
+def login_to_dashboard(page):
+    # 优先尝试Cookie登录
+    if SESSION_COOKIE and login_with_cookie(page):
+        return True
+    
+    # 回退到账号密码登录
+    if EMAIL and PASSWORD and login_with_credentials(page):
+        return True
+    
+    raise Exception("All login methods failed")
+
 def get_expiration_time(page):
     try:
-        # 尝试多种选择器
         selectors = [
             "div:has-text('Expires') >> nth=0",
             "text=EXPIRED",
@@ -177,7 +199,7 @@ def process_server_renewal(page):
         print(f"Server renewal process error: {e}")
         return False
 
-def save_debug_info(page, context, success):
+def save_debug_info(page, success):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     status = "success" if success else "error"
     
@@ -209,7 +231,7 @@ def main():
             
             # 创建上下文
             context = browser.new_context(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
                 viewport={"width": 1920, "height": 1080},
                 locale="en-US"
             )
@@ -218,21 +240,21 @@ def main():
             
             # 登录
             if not login_to_dashboard(page):
-                save_debug_info(page, context, False)
+                save_debug_info(page, False)
                 raise Exception("Login failed")
             
             # 执行续期
             if not process_server_renewal(page):
-                save_debug_info(page, context, False)
+                save_debug_info(page, False)
                 raise Exception("Renewal process failed")
             
             print("Renewal completed successfully")
-            save_debug_info(page, context, True)
+            save_debug_info(page, True)
             
         except Exception as e:
             print(f"Execution error: {e}")
             if browser:
-                save_debug_info(page, context, False)
+                save_debug_info(page, False)
             update_last_renew_time(False, error_message=str(e))
             
         finally:
